@@ -143,7 +143,7 @@
           "upper_bound": -0.027509799227118492
         }
       ],
-      "identical_fields": 418,
+      "identical_fields": 418, "missing_scientific": [], "nonfinite": [], "only_new_scientific": ["analysis_settings.bh_family", "analysis_settings.joint_bootstrap_replicates", "analysis_settings.seeds.h2_joint_bootstrap", "analysis_settings.seeds.joint_bootstrap", "analysis_settings.seeds.verdict_bootstrap", "analysis_settings.universe_weighting", "analysis_settings.verdict_bootstrap_resamples"],
       "hypothesis_verdicts": {
         "H4": [
           "supported",

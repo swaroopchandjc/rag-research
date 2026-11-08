@@ -153,7 +153,7 @@
           "upper_bound": -0.027509795903155873
         }
       ],
-      "identical_fields": 445,
+      "identical_fields": 445, "missing_scientific": [], "nonfinite": [], "only_new_scientific": [],
       "hypothesis_verdicts": {
         "H4": [
           "supported",
