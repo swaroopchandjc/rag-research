@@ -13,9 +13,8 @@ authors:
     orcid: "https://orcid.org/0009-0009-5928-577X"
 repository-code: "https://github.com/swaroopchandjc/rag-research"
 url: "https://github.com/swaroopchandjc/rag-research"
-license:
-  - MIT
-  - CC-BY-4.0
+# Code: MIT. Results, documents and figures: CC-BY-4.0 (see LICENSE-DATA.md). Zenodo accepts one licence here.
+license: MIT
 keywords:
   - retrieval-augmented generation
   - chunking
