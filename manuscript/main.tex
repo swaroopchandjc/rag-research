@@ -23,6 +23,7 @@
   \newcommand*{\AuthorName}{Swaroop Chand J C}
   \newcommand*{\AuthorORCID}{0009-0009-5928-577X}
   \newcommand*{\CodeURL}{https://github.com/swaroopchandjc/rag-research}
+  \newcommand*{\ArchiveDOI}{10.5281/zenodo.24053941}
 \fi
 \newcommand*{\AuthorAffiliation}{}
 \newcommand*{\AuthorEmail}{}
@@ -334,7 +335,7 @@ Chunking verdicts depend on the retrieval-selection protocol. Matching words ins
 The answer-quality check does not detect a corresponding positive F1 interaction, although its intervals exclude interactions as large as its minimum detectable effects; for the primary comparison, exact match moves in the opposite direction. The practical lesson is to state what the comparison holds constant: report retrieval depth and text budget, and test answer quality rather than infer it from evidence coverage.
 
 \section{Reproducibility}\label{sec:reproducibility}
-The code, the analysis plans with their deviation logs, dataset manifests with SHA-256 digests of the source files, run configurations, per-query results and analysis outputs accompany this paper\ifnum\AnonymousSubmission=1{} (repository withheld for anonymous review)\else{} and are available at \url{\CodeURL}\fi. Every result value in the text, tables and figures is generated from the stored result files, and a separate script recomputes each reported value from its source; design constants (dataset names, grid sizes, seeds, thresholds) are written directly in the text.
+The code, the analysis plans with their deviation logs, dataset manifests with SHA-256 digests of the source files, run configurations, per-query results and analysis outputs accompany this paper\ifnum\AnonymousSubmission=1{} (repository withheld for anonymous review)\else{} and are available at \url{\CodeURL}. Release v0.1.1 of that repository, containing the code, analysis plans, stored results and reproducibility materials, is archived on Zenodo at \href{https://doi.org/\ArchiveDOI}{doi:\ArchiveDOI}\fi. Every result value in the text, tables and figures is generated from the stored result files, and a separate script recomputes each reported value from its source; design constants (dataset names, grid sizes, seeds, thresholds) are written directly in the text.
 
 Recomputing an analysis from stored outputs is not the same as re-running an experiment. From the stored per-query results, the planned analyses of the confirmatory runs and of the answer check recompute without difference, the stored pilot analysis recomputes except for the \PilotBounds{} interval bounds described in Section~\ref{sec:limitations}, and the reported analyses were also reproduced by an independent implementation of the verdict rule and the resampling. Of the experiments, only BM25 retrieval was re-executed from the public data; it reproduced every stored score and word count. Dense retrieval and answer generation need a GPU and were not re-executed; half-precision embeddings and greedy decoding can differ across hardware. The stored runs predate the run format that records digests of the code and inputs.
 
