@@ -97,3 +97,32 @@ def test_compare_rerun_identical_and_changed(tmp_path):
     assert res["chunkings"]["fixed-128"]["identical_share"] < 1.0 and res["chunkings"]["fixed-512"]["identical_share"] == 1.0
     (new / "squad2" / "fixed-512.npz").unlink()
     assert cr.main(["--stored", str(stored), "--new", str(new), "--out-json", str(tmp_path / "c.json")]) == 1
+
+def test_underfill_bound_record_ignores_metadata_but_not_science():
+    """Metadata edits must not change the scientific comparison."""
+    import copy
+    import underfill_bound as ub
+
+    stored = {
+        "H4": {"estimate": 0.554, "verdict": "supported"},
+        "analysis_code_sha256": "a" * 64,
+        "analysis_run_dir": "experiments/E3_semantic_dense/runs/confirmatory-kaggle-gpu",
+        "source_manifests": {"manifest_sha256": "a" * 64},
+    }
+    new_code = copy.deepcopy(stored) | {
+        "analysis_code_sha256": "b" * 64,
+        "analysis_run_dir": "/scratch/elsewhere",
+        "source_manifests": {"manifest_sha256": "b" * 64},
+    }
+
+    assert ub.run_record(stored, new_code) == ub.run_record(
+        stored, copy.deepcopy(stored)
+    )
+
+    new_code["H4"]["estimate"] = 0.559
+    rec = ub.run_record(stored, new_code)
+
+    assert rec["identical_fields"] == 1
+    assert rec["changed_fields"] == [
+        {"field": "H4.estimate", "stored": 0.554, "upper_bound": 0.559}
+    ]

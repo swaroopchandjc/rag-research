@@ -28,5 +28,5 @@ maximum possible score (1.0 on every metric) and recomputing the Study 1b analys
 
 19 fields change, all in Study 1b: among hypothesis quantities the largest change is the dense-only H4 sensitivity
 (49.8 → 50.7 pp); among per-dataset shares, the Qasper S5-256 budget-matched inconclusive share (94.4 % → 88.9 %).
-426 fields are identical and no hypothesis verdict changes. Runs created with the current code fill budget-matched selections
+418 scientific fields (metadata not counted) are identical and no hypothesis verdict changes. Runs created with the current code fill budget-matched selections
 to the budget (`ragmv.budgetfill`) and record ranking depth, expansions and corpus exhaustion.

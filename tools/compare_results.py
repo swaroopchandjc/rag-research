@@ -65,10 +65,11 @@ def compare(old: dict, new: dict, atol: float = 1e-12, ignore: tuple[str, ...] =
         if not meta and (_nonfinite(x) or _nonfinite(y)):
             out["nonfinite"].append((k, x, y))
             continue
-        if x == y and type(x) is type(y):
+        if meta:
+            if x != y or type(x) is not type(y):
+                out["metadata_differences"].append((k, x, y))
+        elif x == y and type(x) is type(y):
             out["identical"] += 1
-        elif meta:
-            out["metadata_differences"].append((k, x, y))
         elif isinstance(x, (int, float)) and isinstance(y, (int, float)) and not isinstance(x, bool) \
                 and not isinstance(y, bool) and (isinstance(x, float) or isinstance(y, float)):
             d = abs(float(x) - float(y))

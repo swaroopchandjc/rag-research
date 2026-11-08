@@ -23,12 +23,42 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
-from compare_results import compare  # noqa: E402
+from compare_results import compare, is_metadata  # noqa: E402
 
 ANALYSES = {"confirmatory-kaggle-gpu": ("E3_semantic_dense", "ragmv.analyze1b", "CONFIRMATORY"),
             "exploratory-kaggle-gpu": ("E3_semantic_dense", "ragmv.analyze1b", "EXPLORATORY"),
             "confirmatory-20261018": ("E1_retrieval_multiverse", "ragmv.analyze", "CONFIRMATORY"),
             "pilot-exploratory-20261018": ("E1_retrieval_multiverse", "ragmv.analyze", "EXPLORATORY")}
+
+
+
+def run_record(stored: dict, upper: dict) -> dict:
+    """Compare scientific fields only; metadata must not affect the bound record."""
+    res = compare(stored, upper)
+    verdicts = {
+        h: (stored[h]["verdict"], upper[h]["verdict"])
+        for h in stored
+        if isinstance(stored[h], dict)
+        and "verdict" in stored[h]
+        and isinstance(upper.get(h), dict)
+        and "verdict" in upper[h]
+    }
+    return {
+        "changed_fields": [
+            {"field": k, "stored": x, "upper_bound": y}
+            for k, x, y, _ in res["different"]
+        ],
+        "identical_fields": res["identical"],
+        "missing_scientific": res["missing_scientific"],
+        "nonfinite": res["nonfinite"],
+        "only_new_scientific": [
+            k for k in res["only_new"] if not is_metadata(k)
+        ],
+        "hypothesis_verdicts": verdicts,
+        "verdict_changes": [
+            h for h, (a, b) in verdicts.items() if a != b
+        ],
+    }
 
 
 def main(argv=None) -> int:
@@ -69,16 +99,19 @@ def main(argv=None) -> int:
         name = run_id if args.inference == "planned" else f"{run_id}-consistent-query"
         stored = json.loads((ROOT / "experiments" / exp / "analysis" / name / "results.json").read_text())
         upper = json.loads((out / "results.json").read_text())
-        res = compare(stored, upper)
-        verdicts = {h: (stored[h]["verdict"], upper[h]["verdict"]) for h in stored if isinstance(stored[h], dict)
-                    and "verdict" in stored[h]}
-        report["runs"][run_id] = {
-            "changed_fields": [{"field": k, "stored": x, "upper_bound": y} for k, x, y, _ in res["different"]],
-            "identical_fields": res["identical"], "hypothesis_verdicts": verdicts,
-            "verdict_changes": [h for h, (a, b) in verdicts.items() if a != b]}
+        report["runs"][run_id] = run_record(stored, upper)
     args.out_json.write_text(json.dumps(report, indent=2))
+    failed = False
     for run_id, r in report["runs"].items():
         print(f"{run_id}: {len(r['changed_fields'])} fields changed at the upper bound; verdict changes: {r['verdict_changes']}")
+        if r["missing_scientific"] or r["nonfinite"]:
+            failed = True
+            print(f"  ERROR: missing scientific fields={len(r['missing_scientific'])}, non-finite values={len(r['nonfinite'])}")
+
+    if failed:
+        print("ERROR: scientific comparison is incomplete or contains non-finite values.")
+        return 1
+
     return 0
 
 
